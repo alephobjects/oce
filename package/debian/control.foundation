@@ -1,0 +1,25 @@
+Package: liboce-foundation10
+Version: [BUILD_VERSION]
+Architecture: [ARCH]
+Maintainer: Aleph Objects, Inc. <info@alephobjects.com>
+Installed-Size: 4610
+Depends: libc6 (>= 2.17), libgcc1 (>= 1:4.1.1), libstdc++6 (>= 4.4.0)
+Section: libs
+Priority: extra
+Homepage: https://github.com/tpaviot/oce/wiki
+Description: OpenCASCADE Community Edition CAE platform shared library
+ OpenCASCADE is a suite for 3D surface and solid modeling, visualization, data
+ exchange and rapid application development.  It is an excellent platform for
+ development of numerical simulation software including CAD/CAM/CAE, AEC and
+ GIS, as well as PDM applications.
+ .
+ This package is based on OCE, OpenCASCADE Community Edition, which is
+ maintained by a community of developers, and not by OpenCASCADE SAS.
+ .
+ This package contains foundation classes which provide a variety of
+ general-purpose services such as automated management of heap memory,
+ exception handling, classes for manipulating aggregates of data, basic
+ math tools.
+ .
+ This package contains the following shared libraries:
+	TKernel TKMath TKAdvTools
