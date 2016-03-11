@@ -29,7 +29,7 @@ TAR=tar
 
 OCE_MAJOR_VERSION=`grep "set(OCE_VERSION_MAJOR" ../CMakeLists.txt | cut -d ' ' -f2 | sed 's/)//'`
 OCE_MINOR_VERSION=`grep "set(OCE_VERSION_MINOR" ../CMakeLists.txt | cut -d ' ' -f2 | sed 's/)//'`
-OCE_PATCH_VERSION=`grep "set(OCE_VERSION_PATCH" ../CMakeLists.txt | cut -d ' ' -f2 | sed 's/)//'`
+# OCE_PATCH_VERSION=`grep "set(OCE_VERSION_PATCH" ../CMakeLists.txt | cut -d ' ' -f2 | sed 's/)//'`
 
 # Actually for PATCH version the following is implemented:
 OCE_PATCH_VERSION=`git rev-list HEAD | wc -l | sed -e 's/ *//g' | xargs -n1 printf %04d`
@@ -57,16 +57,23 @@ if [[ "$BUILD_TARGET" = "debian_i386" || "$BUILD_TARGET" = "debian_amd64" ]]; th
 	mkdir -p $BUILD_DIR
 
 
-# Now the configs that is standard:
-# -DOCE_WITH_FREEIMAGE=OFF \
-# -DOCE_WITH_GL2PS=OFF \
+# Now the configure via cmake
+# -DOCE_DRAW=OFF
+# -DOCE_WITH_OPENCL=OFF
+# -DOCE_WITH_VTK=OFF
 	cd $BUILD_DIR
-	cmake	-DCMAKE_INSTALL_PREFIX:PATH=/usr/local \
-		-DOCE_INSTALL_PREFIX:PATH=/usr \
-		-DCMAKE_BUILD_TYPE=Debug \
+	cmake	-DCMAKE_BUILD_TYPE=Debug \
+		-DOCE_INSTALL_LIB_DIR=/usr/lib/oce-$OCE_MAJOR_VERSION.$OCE_MINOR_VERSION \
+		-DOCE_VERSION_PATCH=$OCE_PATCH_VERSION \
+		-DOCE_INSTALL_PREFIX=/usr \
 		-DOCE_VISUALISATION=ON \
+		-DOCE_WITH_FREEIMAGE=ON \
+		-DOCE_WITH_GL2PS=ON \
 		-DOCE_DATAEXCHANGE=ON \
+		-DOCE_OCAF=ON \
+		-DOCE_TBB_MALLOC_SUPPORT=ON \
 		-DOCE_MULTITHREAD_LIBRARY=TBB \
+		-DOCE_VISUALISATION=ON \
 		../..
 	if [ $? != 0 ]; then echo "Failed to configure OpenCASCADE"; exit 1; fi
 	$MAKE -j3
@@ -76,10 +83,29 @@ if [[ "$BUILD_TARGET" = "debian_i386" || "$BUILD_TARGET" = "debian_amd64" ]]; th
 	mkdir -p $TARGET_DIR
 # Installing
 	$MAKE DESTDIR=$TARGET_DIR install
-	if [ $? != 0 ]; then echo "Failed to Install FreeCAD"; exit 1; fi
+	if [ $? != 0 ]; then echo "Failed to Install OpenCASCADE"; exit 1; fi
 	cd $SCRIPT_DIR
 # Additional Debian-specific stuff: share directory
 
+
+
+# Debian package directory should reside inside the target directory
+        mkdir -p ${TARGET_DIR}/DEBIAN
+        cat debian/control | sed "s/\[BUILD_VERSION\]/${FULL_VERSION}/" | sed "s/\[ARCH\]/${BUILD_ARCH}/" > ${TARGET_DIR}/DEBIAN/control
+        cp debian/postinst ${TARGET_DIR}/DEBIAN/postinst
+        cp debian/postrm ${TARGET_DIR}/DEBIAN/postrm
+        cp debian/shlibs ${TARGET_DIR}/DEBIAN/shlibs
+
+# Now that the directory structure is ready, let's build a package
+	rm -Rf ${SCRIPT_DIR}/liboce10_*.deb
+# Now that the directory structure is ready, let's build a package
+	fakeroot sh -ec "
+		chown root:root ${TARGET_DIR} -R
+		chmod u+w,a+rX,go-w ${TARGET_DIR} -R
+		chmod a+x ${TARGET_DIR}/DEBIAN -R
+		dpkg-deb -Zgzip --build ${TARGET_DIR} ${SCRIPT_DIR}/liboce10_${FULL_VERSION}_${BUILD_ARCH}.deb
+		chown `id -un`:`id -gn` ${TARGET_DIR} -R
+	"
 	exit
 fi
 	
