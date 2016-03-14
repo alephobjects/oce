@@ -86,7 +86,19 @@ if [[ "$BUILD_TARGET" = "debian_i386" || "$BUILD_TARGET" = "debian_amd64" ]]; th
 	if [ $? != 0 ]; then echo "Failed to Install OpenCASCADE"; exit 1; fi
 	cd $SCRIPT_DIR
 # Additional Debian-specific stuff: share directory
-
+	rm -rf $TARGET_DIR/usr/lib/oce-$OCE_MAJOR_VERSION.$OCE_MINOR_VERSION/*.so
+	rm -rf $TARGET_DIR/usr/lib/oce-$OCE_MAJOR_VERSION.$OCE_MINOR_VERSION/*.so.10
+	cd  $TARGET_DIR/usr/lib
+	LIB_FILES="$TARGET_DIR/usr/lib/oce-$OCE_MAJOR_VERSION.$OCE_MINOR_VERSION/*.so.10.0.0"
+	for lib_file in $LIB_FILES 
+	do
+		LIB_FILE_NOEXT=$(basename $lib_file)
+		LIB_FILE_NOEXT=${LIB_FILE_NOEXT%.*}
+		LIB_FILE_NOEXT=${LIB_FILE_NOEXT%.*}
+		echo "Linking - $LIB_FILE_NOEXT"
+		ln -s oce-$OCE_MAJOR_VERSION.$OCE_MINOR_VERSION/$(basename $lib_file) $LIB_FILE_NOEXT
+	done
+	cd $SCRIPT_DIR
 
 
 # Debian package directory should reside inside the target directory
