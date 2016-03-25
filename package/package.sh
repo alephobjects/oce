@@ -61,8 +61,10 @@ if [[ "$BUILD_TARGET" = "debian_i386" || "$BUILD_TARGET" = "debian_amd64" ]]; th
 # -DOCE_DRAW=OFF
 # -DOCE_WITH_OPENCL=OFF
 # -DOCE_WITH_VTK=OFF
+# -DOCE_MULTITHREAD_LIBRARY=TBB
+# -DOPENMP_LIBRARY=-lgomp
 	cd $BUILD_DIR
-	cmake	-DCMAKE_BUILD_TYPE=Release \
+	cmake	-DCMAKE_BUILD_TYPE="Release" \
 		-DOCE_INSTALL_LIB_DIR=/usr/lib/oce-$OCE_MAJOR_VERSION.$OCE_MINOR_VERSION \
 		-DOCE_VERSION_PATCH=$OCE_PATCH_VERSION \
 		-DOCE_INSTALL_PREFIX=/usr \
@@ -72,7 +74,7 @@ if [[ "$BUILD_TARGET" = "debian_i386" || "$BUILD_TARGET" = "debian_amd64" ]]; th
 		-DOCE_DATAEXCHANGE=ON \
 		-DOCE_OCAF=ON \
 		-DOCE_TBB_MALLOC_SUPPORT=ON \
-		-DOCE_MULTITHREAD_LIBRARY=TBB \
+		-DOCE_MULTITHREAD_LIBRARY=OPENMP \
 		-DOCE_VISUALISATION=ON \
 		../..
 	if [ $? != 0 ]; then echo "Failed to configure OpenCASCADE"; exit 1; fi
