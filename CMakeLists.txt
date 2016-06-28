@@ -23,14 +23,8 @@ set(OCE_VERSION_MAJOR 0)
 set(OCE_VERSION_MINOR 17)
 # OCE_VERSION_PATCH is used for bugfixes releases only
 # (uncomment following line)
-<<<<<<< HEAD
-set( OCE_VERSION_PATCH ${OCE_VERSION_PATCH} )
-#  Empty for official releases, set to -dev, -rc1, etc for development releases
-# set(OCE_VERSION_DEVEL -dev)
-=======
 set(OCE_VERSION_PATCH 2)
 #  Empty for official releases, set to -dev, -rc1, etc for development releases
->>>>>>> add50046a86e5359e4a728cb68fce56e7c29612b
 set(OCE_VERSION_DEVEL)
 
 # bugfix release: add ${OCE_VERSION_PATCH} to OCE_VERSION
