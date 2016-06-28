@@ -19,6 +19,8 @@
 #include <gp.hxx>
 #include <Geom_Geometry.hxx>
 #include <Geom_BSplineCurve.hxx>
+#include <ElCLib.hxx>
+
 #include <Geom_BezierCurve.hxx>
 #include <Geom_OffsetCurve.hxx>
 #include <Geom_Line.hxx>
@@ -29,7 +31,6 @@
 #include <Standard_ConstructionError.hxx>
 #include <Standard_RangeError.hxx>
 #include <Precision.hxx>
-#include <ElCLib.hxx>
 
 
 typedef Handle(Geom_TrimmedCurve) Handle(TrimmedCurve);
@@ -49,7 +50,7 @@ typedef gp_Vec  Vec;
 
 Handle(Geom_Geometry) Geom_TrimmedCurve::Copy () const {
  
-  Handle(TrimmedCurve) Tc = new TrimmedCurve (basisCurve, uTrim1, uTrim2);
+  Handle(Geom_TrimmedCurve) Tc = new TrimmedCurve (basisCurve, uTrim1, uTrim2);
   return Tc;
 }
 
@@ -69,9 +70,9 @@ Geom_TrimmedCurve::Geom_TrimmedCurve (const Handle(Geom_Curve)& C,
   // kill trimmed basis curves
   Handle(Geom_TrimmedCurve) T = Handle(Geom_TrimmedCurve)::DownCast(C);
   if (!T.IsNull())
-    basisCurve = Handle(Curve)::DownCast(T->BasisCurve()->Copy());
+    basisCurve = Handle(Geom_Curve)::DownCast(T->BasisCurve()->Copy());
   else
-    basisCurve = Handle(Curve)::DownCast(C->Copy());
+    basisCurve = Handle(Geom_Curve)::DownCast(C->Copy());
 
   SetTrim(U1,U2,Sense);
 }
