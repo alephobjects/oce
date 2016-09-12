@@ -20,12 +20,12 @@
 project(OCE)
 
 set(OCE_VERSION_MAJOR 0)
-set(OCE_VERSION_MINOR 17)
+set(OCE_VERSION_MINOR 18)
 # OCE_VERSION_PATCH is used for bugfixes releases only
 # (uncomment following line)
-set(OCE_VERSION_PATCH 2)
+set(OCE_VERSION_PATCH)
 #  Empty for official releases, set to -dev, -rc1, etc for development releases
-set(OCE_VERSION_DEVEL)
+set(OCE_VERSION_DEVEL -dev)
 
 # bugfix release: add ${OCE_VERSION_PATCH} to OCE_VERSION
 set(OCE_VERSION ${OCE_VERSION_MAJOR}.${OCE_VERSION_MINOR}${OCE_VERSION_DEVEL})
@@ -351,14 +351,18 @@ if(MSVC OR MINGW)
 endif(MSVC OR MINGW)
 
 if(OCE_VISUALISATION AND OCE_WITH_VTK)
-	find_package(VTK COMPONENTS
+	set(vtk_components
 		vtkCommonCore
 		vtkInteractionStyle
 		vtkIOExport
 		vtkIOLegacy
-		vtkRenderingFreeTypeOpenGL
 		vtkRenderingOpenGL
 		)
+	find_package(VTK COMPONENTS ${vtk_components})
+	if (TARGET vtkRenderingFreeTypeOpenGL)
+		list(APPEND vtk_components vtkRenderingFreeTypeOpenGL)
+		find_package(VTK COMPONENTS ${vtk_components})
+	endif()
 endif()
 
 set(INSTALL_STDRESOURCE_FILES)
